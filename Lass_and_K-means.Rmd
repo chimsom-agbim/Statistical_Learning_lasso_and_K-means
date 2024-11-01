@@ -1,0 +1,51 @@
+---
+title: "Lasso_and_K-means"
+output: github_document
+date: "2024-11-01"
+---
+
+```{r setup}
+library(tidyverse)
+library(glmnet)
+
+set.seed(11)
+```
+
+##Lasso 
+
+So to study this, we'll look at data studying birthweight. "frace" and "mrace" are race categories in the dataset. It's always good to read the dataset first so you know what you're working with. 
+
+```{r}
+read_csv("extra_topic_data/birthweight.csv")
+```
+Ok! So this code below is written so that I change sex from 1-2 to male or female, and same for race. The `as.logical` function returns values to be "true" or "false". So you're telling it to interpret values in that column as yes there's a malformation or no there's not. Then after I clean up this data, I want to take a look at a small 200 sample subset. 
+
+```{r}
+bwt_df = 
+  read_csv("extra_topic_data/birthweight.csv") |> 
+  janitor::clean_names() |>
+  mutate(
+    babysex = as.factor(babysex),
+    babysex = fct_recode(babysex, "male" = "1", "female" = "2"),
+    frace = as.factor(frace),
+    frace = fct_recode(
+      frace, "white" = "1", "black" = "2", "asian" = "3", 
+      "puerto rican" = "4", "other" = "8"),
+    malform = as.logical(malform),
+    mrace = as.factor(mrace),
+    mrace = fct_recode(
+      mrace, "white" = "1", "black" = "2", "asian" = "3", 
+      "puerto rican" = "4")) |> 
+  sample_n(200)
+
+bwt_df
+```
+## Building the Lasso Model 
+
+The function asks us for an outcome vector,y, and a matrix, x, of predictors. Told you this was for cases where there are lots of independent variables-- a whole matrix! The matrix automatically creates an intercept, which is the outcome value that would be expected if all predictors were set to 0. We want to get rid of the first column, so I'm telling it to make the matrix and include all rows, but get rid of the first column. 
+
+```{r}
+x = model.matrix(bwt ~ ., bwt_df)
+x
+```
+
