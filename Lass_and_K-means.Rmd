@@ -42,10 +42,19 @@ bwt_df
 ```
 ## Building the Lasso Model 
 
-The function asks us for an outcome vector,y, and a matrix, x, of predictors. Told you this was for cases where there are lots of independent variables-- a whole matrix! The matrix automatically creates an intercept, which is the outcome value that would be expected if all predictors were set to 0. We want to get rid of the first column, so I'm telling it to make the matrix and include all rows, but get rid of the first column. 
+The function asks us for an outcome vector,y, and a matrix, x, of predictors. Told you this was for cases where there are lots of independent variables-- a whole matrix! The matrix automatically creates an intercept, which is the outcome value that would be expected if all predictors were set to 0. 
 
 ```{r}
 x = model.matrix(bwt ~ ., bwt_df)
 x
 ```
+We want to get rid of the first column that has the intercept, so I'm telling it to make the matrix and include all rows, but get rid of the first column. So the goal of this function is to see how the matrix of variables X influences the outcome of interest y, which is birthweight based on the initial data frame, and I'm telling it to pull out the birthweight. 
 
+```{r}
+x = model.matrix(bwt ~ ., bwt_df) [,-1]
+x
+y= bwt_df |> pull(bwt)
+y
+```
+You can finish the rest of this lecture starting at "To fit a lasso model" from this link 
+https://p8105.com/stat_learning.html 
